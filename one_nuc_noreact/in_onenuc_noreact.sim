@@ -27,7 +27,6 @@ bond_coeff 2	 30.0 2.0 1.0 1.0
 bond_coeff 3     30.0 3.0 1.0 2.5
 bond_coeff 4     30.0 2.0 1.0 1.0
 
-change_box all x final -66 66
 region conf cylinder x 0 0 ${cr} -50 50
 region cap1 sphere 50 0 0 ${cr}
 region cap2 sphere -50 0 0 ${cr}

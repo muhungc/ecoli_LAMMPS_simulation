@@ -17,35 +17,25 @@ log             log.polymer.txt
 pair_style lj/cut 1.1225
 pair_modify shift yes
 
-read_restart init.restart5
-read_data adding_fribo_9000.xyz add append extra/special/per/atom 30 extra/bond/per/atom 30
+read_restart init.restart
+read_data adding_fribo_6000.xyz add append extra/special/per/atom 30 extra/bond/per/atom 30
 
-#bond_style harmonic
+
 bond_style fene
 special_bonds fene
-
-
-#bond_coeff 1     30.0 4.0
-#bond_coeff 2     30.0 1.0
-#bond_coeff 3     30.0 2.2
-#bond_coeff 4	 300.0 1.0
 
 bond_coeff 1	 30.0 4.5 1.0 4.0
 bond_coeff 2	 30.0 2.0 1.0 1.0
 bond_coeff 3     30.0 3.0 1.0 2.5
 bond_coeff 4     30.0 2.0 1.0 1.0
 
-change_box all x final -99 99
-region conf cylinder x 0 0 ${cr} -83 83
-region cap1 sphere 83 0 0 ${cr}
-region cap2 sphere -83 0 0 ${cr}
+change_box all x final -66 66
+region conf cylinder x 0 0 ${cr} -50 50
+region cap1 sphere 50 0 0 ${cr}
+region cap2 sphere -50 0 0 ${cr}
 region capsule union 3 conf cap1 cap2 side in
-group dna delete
-group ribo delete
-group f_ribo delete
-group rnap delete
 
-group dna type 1 2 3 4 11 12
+group dna type 1 2 3 4
 group ribo type 5 6 7
 group f_ribo type 8
 group rnap type 9 10
@@ -54,17 +44,13 @@ velocity all create 1.0 ${number1} rot yes dist gaussian
 
 pair_coeff      * * 1.0 1.0 1.1225 #WCA
 pair_coeff      1*4 1*4 1.0 4.0 4.49
-pair_coeff      1*4 11*12 1.0 4.0 4.49
-pair_coeff      11*12 11*12 1.0 4.0 4.49
 pair_coeff      1*4 5*7 1.0 3.5 3.93
-pair_coeff      5*7 11*12 1.0 3.5 3.93
-pair_coeff	5*8 5*8 1.0 1.0 1.1225
+pair_coeff        5*8 5*8 1.0 1.0 1.1225
 pair_coeff      1*4 8 1.0 2.5 2.81
-pair_coeff      8 11*12 1.0 2.5 2.81
 pair_coeff      * 9*10 0.0001 0.501 0.55
 pair_coeff      1*4 9*10 0.0001 2.5 2.81
 pair_coeff      8 9*10 0.0001 0.501 5.0
-pair_coeff      9*10 11*12 0.0001 2.5 2.81
+pair_coeff      * 11 0.0001 0.501 0.6
 pair_coeff      9*10 9*10 0.01 1.0 1.1225
 neighbor       5.0 multi
 
@@ -106,7 +92,7 @@ fix walldna dna wall/region capsule lj93 1.0 2.0 2.32
 fix wallribo ribo wall/region capsule lj93 1.0 0.5 0.58
 fix wallfribo f_ribo wall/region capsule lj93 1.0 0.5 0.58
 fix wallrnap rnap wall/region capsule lj93 1.0 2.0 2.32
-#dump            1 all custom 100 initial.dump id type x y z mass
+
 thermo_style    custom step dt time temp pe ke ebond
 thermo_modify flush yes
 thermo          1000
@@ -116,37 +102,27 @@ timestep        0.0005
 run 100000
 unfix 3
 unfix 4
-unfix wall
 timestep        0.00001
 reset_timestep  0
 
 
-fix polyform all bond/create 20000 8 10 1.3 2 prob 0.003 ${number2} iparam 1 5 jparam 1 10
+fix polyform all bond/create 20000 8 10 1.3 2 prob 0.02 ${number2} iparam 1 5 jparam 1 10
 fix dnarnap1 all bond/create 2000 1 9 2.6 3 prob 0.05 ${number1} iparam 4 1 jparam 1 10
 fix dnarnap2 all bond/create 2000 2 9 2.6 3 prob 0.05 ${number1} iparam 4 2 jparam 1 10
 fix dnarnap3 all bond/create 2000 3 9 2.6 3 prob 0.05 ${number1} iparam 4 3 jparam 1 10
 fix dnarnap4 all bond/create 2000 4 9 2.6 3 prob 0.05 ${number1} iparam 4 4 jparam 1 10
 
-variable atom_type atom type==10
-variable k equal 6.0e4
-variable x equal time
-variable p equal exp(-time/60000)/${k}
-#comm_modify mode multi cutoff/multi 1*2 20.0
-#react rnap_product1 dna 20000 0.0 4.48 mol1 mol2 sim_rnap_product1.map prob 0.0 ${number2} max_rxn 1500 rate_limit 1 1000 modify_create overlap 3.0 &
-#react rnap_product2 dna 20000 0.0 4.48 mol3 mol4 sim_rnap_product2.map prob 0.0 ${number2} max_rxn 1500 rate_limit 1 1000 modify_create overlap 3.0 &
-#react ribo_bind all 100 0.0 1.1 mol5 mol6 sim_ribo_bind.map &
-#react poly_form all 100 0.0 1.1 polyform1 polyform2 sim_poly_form.map
-#react mrna_product2 dna 1000 0.0 4.48 mol9 mol10 sim_mrna_product1_6.map prob 0.8 ${number2} max_rxn 1500 rate_limit 1 100 modify_create overlap 2.7
+
 fix rxns all bond/react stabilization yes statted_grp 0.01 &
-  react poly_form all 20000 0.0 1.1 polyform1 polyform2 sim_poly_form.map prob 0.1 ${number1} modify_create overlap 1.0 &
-  react poly_grow all 20000 0.0 1.1 polygrow1 polygrow2 sim_poly_grow.map modify_create overlap 1.2 prob 0.1 ${number4} stabilize_steps 1000 &
-  react ribo_bind all 20000 0.0 1.1 mol5 mol6 sim_ribo_bind.map prob 0.1 ${number2} modify_create overlap 1.0 &
-  react rnap_bind all 20000 0.0 1.1 mol1 mol2 sim_ribo_rnap_bind.map prob 0.1 ${number3} modify_create overlap 1.0 stabilize_steps 500 &
-  react ribo_shortest_bind all 20000 0.0 1.1 mol3 mol4 sim_ribo_shortest_bind.map prob 0.1 ${number4} modify_create overlap 1.0 &
-  react poly_detach1 all 20000 0.0 1.1 polydetach1 polydetach2 sim_poly_detach1.map prob 0.1 ${number1} stabilize_steps 500 modify_create overlap 2.5 &
-  react poly_detach2 all 20000 0.0 1.1 polydetach3 polydetach4 sim_poly_detach2.map prob 0.1 ${number2} stabilize_steps 500 modify_create overlap 2.5 &
-  react poly_detach3 all 20000 0.0 1.1 polydetach5 polydetach6 sim_poly_detach3.map prob 0.1 ${number3} stabilize_steps 500 modify_create overlap 2.5 &
-  react poly_detach4 all 20000 0.0 1.1 polydetach7 polydetach8 sim_poly_detach4.map prob 0.1 ${number4} stabilize_steps 500 modify_create overlap 2.5 &
+  react poly_form all 20000 0.0 1.1 polyform1 polyform2 sim_poly_form.map prob 0.02 ${number1} modify_create overlap 1.0 &
+  react poly_grow all 20000 0.0 1.1 polygrow1 polygrow2 sim_poly_grow.map modify_create overlap 1.2 prob 0.02 ${number4} stabilize_steps 1000 &
+  react ribo_bind all 20000 0.0 1.1 mol5 mol6 sim_ribo_bind.map prob 0.02 ${number2} modify_create overlap 1.0 &
+  react rnap_bind all 20000 0.0 1.1 mol1 mol2 sim_ribo_rnap_bind.map prob 0.02 ${number3} modify_create overlap 1.0 stabilize_steps 500 &
+  react ribo_shortest_bind all 20000 0.0 1.1 mol3 mol4 sim_ribo_shortest_bind.map prob 0.02 ${number4} modify_create overlap 1.0 &
+  react poly_detach1 all 20000 0.0 1.1 polydetach1 polydetach2 sim_poly_detach1.map prob 0.02 ${number1} stabilize_steps 500 modify_create overlap 2.5 &
+  react poly_detach2 all 20000 0.0 1.1 polydetach3 polydetach4 sim_poly_detach2.map prob 0.02 ${number2} stabilize_steps 500 modify_create overlap 2.5 &
+  react poly_detach3 all 20000 0.0 1.1 polydetach5 polydetach6 sim_poly_detach3.map prob 0.02 ${number3} stabilize_steps 500 modify_create overlap 2.5 &
+  react poly_detach4 all 20000 0.0 1.1 polydetach7 polydetach8 sim_poly_detach4.map prob 0.02 ${number4} stabilize_steps 500 modify_create overlap 2.5 &
   react mrna_deg_init ribo 1500000 0.0 1.1 mrna_deg_init1 mrna_deg_init2 sim_mrna_deg_init.map prob 0.005 ${number3} stabilize_steps 1000 &
   react mrna_deg_fb all 10 0.0 1.1 mrna_deg_fb1 mrna_deg_fb2 sim_mrna_deg_fb.map &
   react mrna_deg_final all 10 0.0 1.1 mrna_deg_final1 mrna_deg_final2 sim_mrna_deg_final.map &
@@ -154,8 +130,7 @@ fix rxns all bond/react stabilization yes statted_grp 0.01 &
   react mrna_deg_short_final all 1500000 0.0 1.1 mrna_deg_final3 mrna_deg_final4 sim_mrna_deg_short_final.map prob 0.005 ${number3} stabilize_steps 1000 &
   react ribo_unbind all 50000 0.0 1.1 mol7 mol8 sim_ribo_unbind.map prob 0.003 ${number4}
 fix 4 bond_react_MASTER_group temp/rescale 1 1.0 1.0 0.01 1
-#fix 3 mrna nve
-#fix mrnal mrna langevin 1.0 1.0 50.0 ${number2}
+
 fix 5 dna brownian 1.0 ${number1} gamma_t 4.0 rng gaussian
 fix 6 ribo brownian 1.0 ${number2} gamma_t 1.0 rng gaussian
 fix 7 f_ribo brownian 1.0 ${number3} gamma_t 1.0 rng gaussian
@@ -163,28 +138,15 @@ fix 8 rnap brownian 1.0 ${number4} gamma_t 1.0 rng gaussian
 fix 9 all dt/reset 1 0.00000001 0.0001 0.1 emax 50.0 units lattice
 dump            2 all custom 500000 react_rnap_${sim_num}.dump id mol type x y z mass
 dump            out all yaml 500000 tmp.dump_yaml_${sim_num} id mol type x y z
-#restart 10000  prod.restart1 prod.restart3
+
 
 variable t equal step
-compute cc1 all chunk/atom molecule
-compute myRG2compute all gyration/chunk cc1
-compute myCOMcompute all com/chunk cc1
 
-variable RG1 equal c_myRG2compute[1]
-variable RG2 equal c_myRG2compute[2]
-variable RG10 equal c_myRG2compute[10]
-variable RG11 equal c_myRG2compute[11]
-variable COM1 equal c_myCOMcompute[1][1]
-variable COM2 equal c_myCOMcompute[2][1]
-fix myRG2file all print 10000 "$t ${RG1} ${RG2} ${RG10} ${RG11} ${COM1} ${COM2}" file rg_com_react_${sim_num}.txt screen no 
+
 restart 5000  prod.restart1 react.restart${sim_num}
 run 40000000
-#dump            out all yaml 500000 tmp.dump_yaml_${sim_num} mol type x y z
-#run 50000000
-write_data data*.xyz
 
-#dump            out all yaml 10000 react.dump_yaml mol type x y z
-#run 2000000
+write_data data*.xyz
 
 write_restart   restart.polymer_ring
 

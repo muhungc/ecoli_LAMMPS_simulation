@@ -116,7 +116,6 @@ fix rxns all bond/react stabilization yes statted_grp 0.01 &
   react poly_form all 20000 0.0 1.1 polyform1 polyform2 sim_poly_form.map prob 0.02 ${number1} modify_create overlap 1.0 &
   react poly_grow all 20000 0.0 1.1 polygrow1 polygrow2 sim_poly_grow.map modify_create overlap 1.2 prob 0.02 ${number4} stabilize_steps 1000 &
   react ribo_bind all 20000 0.0 1.1 mol5 mol6 sim_ribo_bind.map prob 0.0 ${number2} modify_create overlap 1.0 &
-  react rnap_bind all 20000 0.0 1.1 mol1 mol2 sim_ribo_rnap_bind.map prob 0.02 ${number3} modify_create overlap 1.0 stabilize_steps 500 &
   react ribo_shortest_bind all 20000 0.0 1.1 mol3 mol4 sim_ribo_shortest_bind.map prob 0.0 ${number4} modify_create overlap 1.0 &
   react poly_detach1 all 20000 0.0 1.1 polydetach1 polydetach2 sim_poly_detach1.map prob 0.02 ${number1} stabilize_steps 500 modify_create overlap 2.5 &
   react poly_detach2 all 20000 0.0 1.1 polydetach3 polydetach4 sim_poly_detach2.map prob 0.02 ${number2} stabilize_steps 500 modify_create overlap 2.5 &
@@ -127,7 +126,7 @@ fix rxns all bond/react stabilization yes statted_grp 0.01 &
   react mrna_deg_final all 10 0.0 1.1 mrna_deg_final1 mrna_deg_final2 sim_mrna_deg_final.map &
   react mrna_deg_swap all 1000 0.0 1.1 mrna_deg_swap1 mrna_deg_swap2 sim_mrna_deg_inter.map &
   react mrna_deg_short_final all 1500000 0.0 1.1 mrna_deg_final3 mrna_deg_final4 sim_mrna_deg_short_final.map prob 0.005 ${number3} stabilize_steps 1000 &
-  react ribo_unbind all 50000 0.0 1.1 mol7 mol8 sim_ribo_unbind.map prob 0.003 ${number4}
+  react ribo_unbind all 50000 0.0 1.1 mol7 mol8 sim_ribo_unbind.map prob 0.0 ${number4}
 fix 4 bond_react_MASTER_group temp/rescale 1 1.0 1.0 0.01 1
 
 fix 5 dna brownian 1.0 ${number1} gamma_t 4.0 rng gaussian
